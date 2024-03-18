@@ -16,9 +16,9 @@ import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
 import SendIcon from '@mui/icons-material/Send';
 import AddIcon from '@mui/icons-material/Add';
-import { AI_KEY } from './key';
+import { API_KEY } from './api';
 function App() {
-  const genAI = new GoogleGenerativeAI(AI_KEY);
+  const genAI = new GoogleGenerativeAI(API_KEY);
   const [iconactions, setIconactions] = useState({
     copy: 'Copy',
     speaker: 'Read Aloud',
@@ -71,7 +71,7 @@ function App() {
         const to_element = document.getElementById("prompt");
         var opt = {
           margin: 1,
-          filename: 'AI.pdf',
+          filename: `${Date.now()}.pdf`,
           image: { type: 'jpeg', quality: 0.98 },
           html2canvas: { scale: 2 },
           jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' },
@@ -197,10 +197,10 @@ function App() {
             backgroundColor: 'white',
             width: { xs: '100%', lg: '50%' },
             bottom: 1.5,
-            right: { xs: 0, lg: 'auto' },
-            left: { xs: 0, lg: 'auto' }
+            right: { xs: 2, lg: 'auto' },
+            left: { xs: 2, lg: 'auto' }
           }}
-          placeholder="Enter your prompt here"
+          placeholder="Enter your message here"
           value={appactions.inputText}
           onChange={(e) => {
             if (e.target.value.length > 0) {
@@ -216,23 +216,21 @@ function App() {
                 <IconButton size="small" disabled={appactions.disablebtn} onClick={async () => {
                   setAppactions({ ...appactions, inputText: '', showwelcome: false, isfetching: true, isdatafetched: false, iserror: false });
                   setPrompts((prevState) => [...prevState, { userInput: appactions.inputText }]);
-                  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-                  const prompt = appactions.inputText;
-                  const result = await model.generateContent(prompt);
-                  const response = result.response;
-                  const text = response.text();
-                  console.log(response)
-                  if (text) {
+                  try {
+                    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+                    const prompt = appactions.inputText;
+                    const result = await model.generateContent(prompt);
+                    const response = result.response;
+                    const text = response.text();
                     setAppactions({ ...appactions, isfetching: false, isdatafetched: true, iserror: false, showiconaction: true, showwelcome: false, inputText: '' });
                     setPrompts([...prompts, { userInput: appactions.inputText, AIoutput: text }]);
-                  } if (response.text === "Text not available") {
+                  }
+                  catch (err) {
+                    console.log(err);
                     setAppactions({ ...appactions, isfetching: false, isdatafetched: false, iserror: true, showiconaction: false, showwelcome: false, inputText: '' });
                     setPrompts((prevState) => [...prevState, { userInput: '', AIoutput: `` }]);
                   }
-                  // setTimeout(() => {
-                  //   setAppactions({ ...appactions, isfetching: false, isdatafetched: true, iserror: false, showiconaction: true, showwelcome: false, inputText: '' });
-                  //   setPrompts([...prompts, { userInput: appactions.inputText, AIoutput: markdowncontent }]);
-                  // }, 4000)
+
                 }}>
                   <SendIcon />
                 </IconButton>
