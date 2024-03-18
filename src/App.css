@@ -1,0 +1,21 @@
+body {
+  background-color: #ffffff;
+}
+@media print {
+  .copy-icon {
+    display: none;
+  }
+}
+#info {
+  overflow: hidden;
+}
+#logo {
+  background: linear-gradient(
+    34deg,
+    orange,
+    rgb(255, 171, 185),
+    rgb(93, 93, 249)
+  );
+  background-clip: text;
+  color: transparent;
+}
